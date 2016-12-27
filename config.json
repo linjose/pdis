@@ -1,0 +1,10 @@
+{
+    "sayit-url":"http://sayit.archive.tw",
+    "sayit-target-path":"/speeches",
+    "sayit-days-ago": 10,
+    "discourse-url":"https://talk.pdis.nat.gov.tw",
+    "discourse-target-path":"/c/pdis-site/how-we-work-track.json",
+    "discourse-api-key":"your-discourse-api-key",
+    "discourse-api-username":"your-discourse-api-username",
+    "discourse-category-id": 13
+}
