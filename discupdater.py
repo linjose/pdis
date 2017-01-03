@@ -61,21 +61,23 @@ def update_raw(list_data):
             yaml_raw = yaml.load(r.json()['raw'])
             if 'content' in yaml_raw.keys():
                 yaml_content = yaml_raw['content']
+                has_transcript = 0
                 for j in range(len(yaml_content)):
                     if 'Transcript' in yaml_content[j].keys():
                         if yaml_content[j]['Transcript'] is None:
                             yaml_raw['content'][j]['Transcript'] = list_data[i]['url']
                             list_data[i]['raw'] = yaml_raw
                             discourse_update(list_data[i])
-                    else:
-                        # with Youtube, Soundcloud, Slido, Wiselike, Discourse
-                        yaml_raw['content'].append({"Transcript":list_data[i]['url']})
-                        list_data[i]['raw'] = yaml_raw                  
-                        discourse_update(list_data[i]) 
+                        has_transcript = 1
+                if has_transcript == 0:
+                    # with Youtube, Soundcloud, Slido, Wiselike, Discourse
+                    yaml_raw['content'].append({"Transcript":list_data[i]['url']})
+                    list_data[i]['raw'] = yaml_raw
+                    discourse_update(list_data[i]) 
             else:
                 # Add new content
                 yaml_raw["content"] = [{"Transcript":list_data[i]['url']}]
-                list_data[i]['raw'] = yaml_raw                  
+                list_data[i]['raw'] = yaml_raw
                 discourse_update(list_data[i])
 
 def discourse_update(data):
@@ -100,6 +102,7 @@ def discourse_create(data):
         "title":  data['title'],
         "raw": yaml.safe_dump(raw, encoding='utf-8', allow_unicode=True, default_flow_style=False),
         "category": config["discourse-category-id"]
+        "created_at": str(data['date'])+"T00:00:00.000Z +08:00"
         }    
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     url = config["discourse-url"] + '/posts?api_key='+config["discourse-api-key"]+'&api_username='+config["discourse-api-username"]
@@ -113,6 +116,7 @@ def log(msg):
     logfile.close()
 
 if __name__ == '__main__':
+    log('===== ACTION =====')
     list_sayit = get_sayit_title()
     list_discourse = get_exist_article()
     list_for_update = check_title(list_sayit, list_discourse)
